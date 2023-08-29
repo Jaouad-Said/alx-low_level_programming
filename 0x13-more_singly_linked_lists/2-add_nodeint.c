@@ -5,7 +5,7 @@
  * @n: data of the node
  * Return: the adress of a node or null
  */
-listint_t *add_nodint(listint_t **head, const int n)
+listint_t *add_nodeint(listint_t **head, const int n)
 {
 	listint_t *newNode;
 
