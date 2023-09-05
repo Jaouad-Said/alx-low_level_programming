@@ -116,8 +116,20 @@ void displayOperatingSystemABI(Elf64_Ehdr header)
 		case ELFOSABI_TRU64:
 			printf("UNIX - TRU64");
 			break;
+		case ELFOSABI_MODESTO:
+			printf("Novell - Modesto");
+			break;
+		case ELFOSABI_OPENBSD:
+			printf("UNIX - OpenBSD");
+			break;
+		case ELFOSABI_STANDALONE:
+			printf("Standalone App");
+			break;
+		case ELFOSABI_ARM:
+			printf("ARM");
+			break;
 		default:
-			displayOperatingSystemABI(header);
+			printf("Unknown (0x%x)", header.e_ident[EI_OSABI]);
 			break;
 	}
 	printf("\n");
