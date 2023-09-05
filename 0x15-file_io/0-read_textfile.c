@@ -7,17 +7,17 @@
  */
 ssize_t read_textfile(const char *filename, size_t letters)
 {
-	int ab;
-	ssize_t bts;
-	char buffer[GET_BUFFER_SIZE * 8];
+	int fd;
+	ssize_t bytes;
+	char buf[READ_BUFFER_SIZE * 8];
 
 	if (!filename || !letters)
 		return (0);
-	ab = open(filename, O_RDONLY);
-	if (ab == -1)
+	fd = open(filename, O_RDONLY);
+	if (fd == -1)
 		return (0);
-	bts = read(ab, &buffer[0], letters);
-	bts = write(STDOUT_FILENO, &buffer[0], bts);
-	close(ab);
-	return (bts);
+	bytes = read(fd, &buf[0], letters);
+	bytes = write(STDOUT_FILENO, &buf[0], bytes);
+	close(fd);
+	return (bytes);
 }
