@@ -1,11 +1,10 @@
 #ifndef MAIN_H
 #define MAIN_H
+
 #include <stdlib.h>
-#include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <sys/stat.h>
 
 #define READ_BUFFER_SIZE 1024
 
