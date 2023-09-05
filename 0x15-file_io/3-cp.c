@@ -1,45 +1,83 @@
 #include "main.h"
+char *allocMemory(char *fd);
+void closeFile(int dsc);
+/**
+ * allocateMemory - allocates memory for a file
+ * @file: file name
+ * Return: pointer to the allocated memory
+ */
+char *allocMemory(char *fd)
+{
+	char *ch;
 
-#define USAGE "Usage: cp file_from file_to\n"
-#define ERR_NOREAD "Error: Can't read from file %s\n"
-#define ERR_NOWRITE "Error: Can't write to %s\n"
-#define ERR_NOCLOSE "Error: Can't close fol %d\n"
-#define PERMS (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH)
+	ch = malloc(sizeof(char) * 1024);
+	if (ch == NULL)
+	{
+		dprintf(STDERR_FILENO, "Can't write to %s\n", fd);
+		exit(99);
+	}
+	return (ch);
+}
 
 /**
- * main - program
- * @ac: argument count
- * @av: argument vector
- *
- * Return: 1 on success 0 on failure
+ * closeFile - close a file
+ * @dsc: file descriptor
+ * Return: void
  */
-int main(int ac, char **av)
+void closeFile(int dsc)
 {
-	int from_fol = 0, to_fol = 0;
-	ssize_t b;
-	char buffer[READ_BUFFER_SIZE];
+	int cl;
 
-	if (ac != 3)
-		dprintf(STDERR_FILENO, USAGE), exit(97);
-	from_fol = open(av[1], O_RDONLY);
-	if (from_fol == -1)
-		dprintf(STDERR_FILENO, ERR_NOREAD, av[1]), exit(98);
-	to_fol = open(av[2], O_WRONLY | O_CREAT | O_TRUNC, PERMISSIONS);
-	if (to_fol == -1)
-		dprintf(STDERR_FILENO, ERR_NOWRITE, av[2]), exit(99);
+	cl = close(dsc);
+	if (cl == -1)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", dsc);
+		exit(100);
+	}
+}
 
-	while ((b = read(from_fol, buf, READ_BUFFER_SIZE)) > 0)
-		if (write(to_fol, buf, b) != b)
-			dprintf(STDERR_FILENO, ERR_NOWRITE, av[2]), exit(99);
-	if (b == -1)
-		dprintf(STDERR_FILENO, ERR_NOREAD, av[1]), exit(98);
+/**
+ * main - program that copies content of a file
+ * @argc: number of arguments passed to main
+ * @argv: the arguments passed to main
+ * Return: int
+ */
+int main(int argc, char *argv[])
+{
+	int fdTo, fdFrom, r, w;
+	char *ch;
 
-	from_fol = close(from_fol);
-	to_fol = close(to_fol);
-	if (from_fol)
-		dprintf(STDERR_FILENO, ERR_NOCLOSE, from_fol), exit(100);
-	if (to_fol)
-		dprintf(STDERR_FILENO, ERR_NOCLOSE, from_fol), exit(100);
+	if (argc != 3)
+	{
+		dprintf(STDERR_FILENO, "Usage: cp fd_from fd_to\n");
+		exit(97);
+	}
 
-	return (EXIT_SUCCESS);
+	ch = allocateMemory(argv[2]);
+	fdFrom = open(argv[1], O_RDONLY);
+	r = read(fdFrom, ch, 1024);
+	fdTo = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC, 0664);
+
+	do {
+		if (fdFrom == -1 || r == -1)
+		{
+			dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", argv[1]);
+			free(ch);
+			exit(98);
+		}
+		w = write(fdTo, ch, r);
+		if (fdTo == -1 || w == -1)
+		{
+			dprintf(STDERR_FILENO, "Error: Can't write to %s\n", argv[2]);
+			free(ch);
+			exit(99);
+		}
+		r = read(fdFrom, ch, 1024);
+		fdTo = open(argv[2], O_WRONLY | O_APPEND);
+	} while (r > 0);
+
+	free(ch);
+	closefd(fdFrom);
+	closefd(fdTo);
+	return (0);
 }
