@@ -250,7 +250,9 @@ int main(int ac, char **av)
 	b = read(fd, &header, sizeof(header));
 	if (b < 1 || b != sizeof(header))
 		dprintf(STDERR_FILENO, "Can't read from file: %s\n", av[1]), exit(98);
-	if (header.e_ident[0] == 0x7f && header.e_ident[1] == 'E' && header.e_ident[2] == 'L' &&
+	if (header.e_ident[0] == 0x7f
+		&& header.e_ident[1] == 'E'
+		&& header.e_ident[2] == 'L' &&
 			header.e_ident[3] == 'F')
 	{
 		printf("ELF Header:\n");
