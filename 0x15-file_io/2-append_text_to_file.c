@@ -4,7 +4,7 @@
  * _strlen - returns the length of a string
  * @s: the string whose length to check
  *
- * Return: length of string
+ * Return: integer length of string
  */
 int _strlen(char *s)
 {
@@ -19,7 +19,7 @@ int _strlen(char *s)
 }
 
 /**
- * append_text_to_file - the functionappends text to a file
+ * append_text_to_file - appends text to a file
  * @filename: name of file to create
  * @text_content: text to write
  *
@@ -27,16 +27,16 @@ int _strlen(char *s)
  */
 int append_text_to_file(const char *filename, char *text_content)
 {
-	int fol;
-	ssize_t bts = 0, len = _strlen(text_content);
+	int fd;
+	ssize_t bytes = 0, len = _strlen(text_content);
 
 	if (!filename)
 		return (-1);
-	fol = open(filename, O_WRONLY | O_APPEND);
-	if (fol == -1)
+	fd = open(filename, O_WRONLY | O_APPEND);
+	if (fd == -1)
 		return (-1);
 	if (len)
-		bytes = write(fol, text_content, len);
-	close(fol);
-	return (bts == len ? 1 : -1);
+		bytes = write(fd, text_content, len);
+	close(fd);
+	return (bytes == len ? 1 : -1);
 }
