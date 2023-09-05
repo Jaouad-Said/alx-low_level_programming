@@ -1,7 +1,7 @@
 #include "main.h"
 #include <elf.h>
 
-void displayOperatingSystemABI(Elf64_Ehdr header);
+void print_osabi_more(Elf64_Ehdr header);
 
 /**
  * print_magic - prints ELF magic bytes
@@ -13,17 +13,17 @@ void print_magic(Elf64_Ehdr header)
 
 	printf("  Magic:   ");
 	for (i = 0; i < EI_NIDENT; i++)
-		printf("%2.2x%s", h.e_ident[i], i == EI_NIDENT - 1 ? "\n" : " ");
+		printf("%2.2x%s", header.e_ident[i], i == EI_NIDENT - 1 ? "\n" : " ");
 }
 
 /**
  * print_class - prints ELF class
- * @h: the ELF header struct
+ * @header: the ELF header struct
  */
 void print_class(Elf64_Ehdr header)
 {
 	printf("  Class:                             ");
-	switch (h.e_ident[EI_CLASS])
+	switch (header.e_ident[EI_CLASS])
 	{
 		case ELFCLASS64:
 			printf("ELF64");
@@ -40,7 +40,7 @@ void print_class(Elf64_Ehdr header)
 
 /**
  * print_data - prints ELF data
- * @h: the ELF header struct
+ * @header: the ELF header struct
  */
 void print_data(Elf64_Ehdr header)
 {
@@ -62,7 +62,7 @@ void print_data(Elf64_Ehdr header)
 
 /**
  * print_version - prints ELF version
- * @h: the ELF header struct
+ * @header: the ELF header struct
  */
 void print_version(Elf64_Ehdr header)
 {
@@ -82,12 +82,12 @@ void print_version(Elf64_Ehdr header)
 
 /**
  * print_osabi - prints ELF osabi
- * @h: the ELF header struct
+ * @header: the ELF header struct
  */
 void print_osabi(Elf64_Ehdr header)
 {
 	printf("  OS/ABI:                            ");
-	switch (h.e_ident[EI_OSABI])
+	switch (header.e_ident[EI_OSABI])
 	{
 		case ELFOSABI_NONE:
 			printf("UNIX - System V");
@@ -117,7 +117,7 @@ void print_osabi(Elf64_Ehdr header)
 			printf("UNIX - TRU64");
 			break;
 		default:
-			displayOperatingSystemABI(header);
+			print_osabi_more(header);
 			break;
 	}
 	printf("\n");
@@ -126,11 +126,11 @@ void print_osabi(Elf64_Ehdr header)
 
 /**
  * print_osabi_more - prints ELF osabi more
- * @h: the ELF header struct
+ * @header: the ELF header struct
  */
 void print_osabi_more(Elf64_Ehdr header)
 {
-	switch (h.e_ident[EI_OSABI])
+	switch (header.e_ident[EI_OSABI])
 	{
 		case ELFOSABI_MODESTO:
 			printf("Novell - Modesto");
@@ -152,21 +152,21 @@ void print_osabi_more(Elf64_Ehdr header)
 
 /**
  * print_abiversion  - prints ELF ABI version
- * @h: the ELF header struct
+ * @header: the ELF header struct
  */
 void print_abiversion(Elf64_Ehdr header)
 {
 	printf("  ABI Version:                       %d\n",
-		h.e_ident[EI_ABIVERSION]);
+		header.e_ident[EI_ABIVERSION]);
 }
 
 /**
  * print_type - prints the ELF type
- * @h: the ELF header struct
+ * @header: the ELF header struct
  */
 void print_type(Elf64_Ehdr header)
 {
-	char *p = (char *)&h.e_type;
+	char *p = (char *)&header.e_type;
 	int i = 0;
 
 	printf("  Type:                              ");
@@ -198,7 +198,7 @@ void print_type(Elf64_Ehdr header)
 
 /**
  * print_entry - prints the ELF entry point address
- * @h: the ELF header struct
+ * @header: the ELF header struct
  */
 void print_entry(Elf64_Ehdr header)
 {
@@ -247,11 +247,11 @@ int main(int ac, char **av)
 	fd = open(av[1], O_RDONLY);
 	if (fd == -1)
 		dprintf(STDERR_FILENO, "Can't open file: %s\n", av[1]), exit(98);
-	b = read(fd, &h, sizeof(header));
+	b = read(fd, &header, sizeof(header));
 	if (b < 1 || b != sizeof(header))
 		dprintf(STDERR_FILENO, "Can't read from file: %s\n", av[1]), exit(98);
-	if (h.e_ident[0] == 0x7f && h.e_ident[1] == 'E' && h.e_ident[2] == 'L' &&
-			h.e_ident[3] == 'F')
+	if (header.e_ident[0] == 0x7f && header.e_ident[1] == 'E' && header.e_ident[2] == 'L' &&
+			header.e_ident[3] == 'F')
 	{
 		printf("ELF Header:\n");
 	}
